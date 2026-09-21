@@ -139,3 +139,4 @@ options:
 
 - [[구성도]] — server/agent 역할, 규모별 구성, 실서버 3대를 k3d로 흉내 내기
 - [[클러스터]] — lab(server 1 + agent 2), lab3(server 3) 생성 명령·설정 파일·확인·장애 리허설
+- [[용어집]] — Kubernetes 용어 한 줄 정의
