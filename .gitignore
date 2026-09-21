@@ -1,0 +1,4 @@
+# Obsidian 개인 작업 상태 (창 배치 등) — 기기마다 달라 커밋하지 않음
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.DS_Store
