@@ -1,0 +1,9 @@
+# 실습 중 만들어지는 비밀값과 인증서는 커밋하지 않는다
+*.pem
+*.key
+*.crt
+*.csr
+*.srl
+server-token*
+kubeconfig*
+*.kubeconfig

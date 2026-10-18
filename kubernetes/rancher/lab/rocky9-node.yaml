@@ -1,0 +1,28 @@
+minimumLimaVersion: 2.0.0
+
+# Lima에 내장된 Rocky 9 클라우드 이미지 (Apple Silicon에서는 aarch64). 홈 폴더 공유 설정은 가져오지 않음
+base:
+- template:_images/rocky-9
+
+vmType: vz
+cpus: 4
+memory: 8GiB
+disk: 30GiB
+
+# Mac 홈 폴더 공유를 끔. 실서버처럼 격리하고, 파일은 limactl copy로 옮김
+mounts: []
+
+# Lima는 기본으로 VM 안에 별도 containerd를 설치함.
+# RKE2의 containerd와 충돌하고 선행 문서 1.5 점검도 실패하므로 끔
+containerd:
+  system: false
+  user: false
+
+# 실습망 연결. VM 안에서 lima0 인터페이스로 보임
+networks:
+- lima: shared
+
+# VM과 Pod가 Rancher 도메인을 lb로 찾도록 Lima 내장 DNS에 등록 (lab.conf.sh 의 RANCHER_HOST, LB_IP)
+hostResolver:
+  hosts:
+    rancher.lab.internal: 192.168.105.108
