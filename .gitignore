@@ -2,3 +2,6 @@
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 .DS_Store
+
+# 설치 스크립트의 실제 값 파일 (IP·도메인)
+kubernetes/rancher/scripts/cluster.env
