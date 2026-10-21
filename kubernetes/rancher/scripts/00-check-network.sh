@@ -22,18 +22,21 @@ for h in rpm.rancher.io get.rke2.io github.com release-assets.githubusercontent.
   if [ "$c" != "000" ]; then ok "$h ($c)"; else warn "$h 차단"; fi
 done
 
-step "Docker Hub 실제 이미지 받기 (RKE2가 떠 있을 때만)"
-# 연결 테스트가 통과해도 CDN에서 큰 파일 받기가 막힐 수 있어 실제로 받아 본다
+step "Docker Hub 큰 이미지 받기 (RKE2가 떠 있을 때만)"
+# 연결 테스트와 작은 이미지(rancher/shell 114MB)는 통과해도
+# CDN(production.cloudfront.docker.com)에서 큰 레이어가 끊긴 적이 있어 큰 이미지로 받아 본다
+BIG_IMAGE=docker.io/rancher/rancher-agent:v2.15.2
+CRICTL=/var/lib/rancher/rke2/bin/crictl
 if [ "$(id -u)" -ne 0 ]; then
   info "sudo로 실행해야 확인 가능해 건너뜀"
-elif systemctl is-active -q rke2-server; then
-  if timeout 300 /var/lib/rancher/rke2/bin/crictl -r "$SOCK" pull docker.io/library/busybox:1.37 >/dev/null 2>&1; then
-    ok "docker.io/library/busybox:1.37 받기 성공"
-  else
-    fail "docker.io 이미지 받기 실패: CDN 차단·지연 의심"
-  fi
-else
+elif ! systemctl is-active -q rke2-server; then
   info "rke2-server가 아직 없어 건너뜀"
+elif "$CRICTL" -r "$SOCK" inspecti "$BIG_IMAGE" >/dev/null 2>&1; then
+  info "$BIG_IMAGE 이미 있음: 받기 확인 불가. 지우고 확인하려면 crictl rmi 후 다시 실행"
+elif timeout 900 "$CRICTL" -r "$SOCK" pull "$BIG_IMAGE" >/dev/null 2>&1; then
+  ok "$BIG_IMAGE 받기 성공"
+else
+  fail "$BIG_IMAGE 받기 실패: CDN 차단·TLS 검사 의심. production.cloudfront.docker.com 확인"
 fi
 
 step "DNS"
